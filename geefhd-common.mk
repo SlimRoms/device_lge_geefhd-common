@@ -46,13 +46,13 @@ PRODUCT_PACKAGES += Torch
 PRODUCT_COPY_FILES += \
         device/lge/geefhd-common/ramdisk/init.geefhd.rc:root/init.geefhd.rc \
         device/lge/geefhd-common/ramdisk/init.geefhd.usb.rc:root/init.geefhd.usb.rc \
-        device/lge/geefhd-common/ramdisk/init.qcom.sh:root/init.qcom.sh
+        device/lge/geefhd-common/ramdisk/init.qcom.sh:root/init.qcom.sh \
+        device/lge/geefhd-common/ramdisk/fstab.geefhd:root/fstab.geefhd
+
 
 # WiFi
 PRODUCT_COPY_FILES += \
-	device/lge/geefhd-common/wifi/WCNSS_cfg.dat:system/vendor/firmware/wlan/prima/WCNSS_cfg.dat \
-	device/lge/geefhd-common/wifi/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
-	device/lge/geefhd-common/wifi/WCNSS_qcom_wlan_nv.bin:system/etc/wifi/WCNSS_qcom_wlan_nv.bin \
+        device/lge/geefhd-common/wifimac/wlan-precheck:system/bin/wlan-precheck \
         device/lge/geefhd-common/wifi/wpa_supplicant.conf:obj/etc/wifi/wpa_supplicant.conf \
         device/lge/geefhd-common/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf
 
@@ -80,22 +80,21 @@ PRODUCT_COPY_FILES += \
 # Non-Ramdisk Init Scripts
 PRODUCT_COPY_FILES += \
 	device/lge/geefhd-common/scripts/kickstart_checker.sh:system/etc/kickstart_checker.sh \
-        device/lge/geefhd-common/scripts/init.gee.bt.sh:system/etc/init.gee.bt.sh \
+	device/lge/geefhd-common/scripts/init.geefhd.bt.sh:system/etc/init.geefhd.bt.sh \
 	device/lge/geefhd-common/scripts/init.qcom.mdm_links.sh:system/etc/init.qcom.mdm_links.sh \
- 	device/lge/geefhd-common/scripts/init.qcom.modem_links.sh:system/etc/init.qcom.modem_links.sh \
-	device/lge/geefhd-common/scripts/efsbackup.sh:system/bin/efsbackup.sh
+ 	device/lge/geefhd-common/scripts/init.qcom.modem_links.sh:system/etc/init.qcom.modem_links.sh
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
 	device/lge/geefhd-common/keylayouts/Button_Jack.kl:system/usr/keylayout/Button_Jack.kl \
 	device/lge/geefhd-common/keylayouts/external_kbd.kl:system/usr/keylayout/external_kbd.kl \
-	device/lge/geefhd-common/keylayouts/keypad_8064.kl:system/usr/keylayout/keypad_8064.kl \
+	device/lge/geefhd-common/keylayouts/gk-keypad-8064.kl:system/usr/keylayout/gk-keypad-8064.kl \
 	device/lge/geefhd-common/keylayouts/MHLRCP.kl:system/usr/keylayout/MHLRCP.kl \
 	device/lge/geefhd-common/keylayouts/osp3-input.kl:system/usr/keylayout/osp3-input.kl 
 
 # Input calibration
 PRODUCT_COPY_FILES += \
-        device/lge/geefhd-common/input/touch_dev.idc:system/usr/idc/touch_dev.idc \
+	device/lge/geefhd-common/input/touch_dev.idc:system/usr/idc/touch_dev.idc \
 	device/lge/geefhd-common/input/osp3-input.idc:system/usr/idc/osp3-input.idc
 
 # These are the hardware-specific features
@@ -164,6 +163,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.telephony.call_ring.multiple=0
 
+# Our Modem responds slowly
+PRODUCT_PROPERTY_OVERRIDES += \
+        ro.telephony.slowModem=1
+
 # QC RIL path for rild
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     rild.libpath=/system/lib/libril-qc-qmi-1.so 
@@ -190,7 +193,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
 	alsa.msm8960 \
-	audio_policy.msm8064 \
+	audio_policy.msm8960 \
 	audio.primary.msm8960 \
 	audio.a2dp.default \
 	audio.usb.default \
@@ -208,7 +211,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.qualcomm.bt.hci_transport=smd
 
 PRODUCT_PACKAGES += \
-	libmmcamera_interface2 \
 	libmmcamera_interface
 
 PRODUCT_PACKAGES += \
@@ -230,7 +232,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	bdAddrLoader \
 	libwfcu \
-	conn_init
+	conn_init \
+	wifimac
 
 PRODUCT_PROPERTY_OVERRIDES += \
 	drm.service.enabled=true
@@ -252,5 +255,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	persist.sys.usb.config=mtp
+
+BOARD_WLAN_DEVICE_REV := bcm4330_b2
+WIFI_BAND := 802_11_ABG
+$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
 
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)

@@ -73,31 +73,40 @@ BOARD_USES_SEPERATED_AUDIO_INPUT := true
 BOARD_HAVE_LOW_LATENCY_AUDIO := true
 
 BOARD_HAVE_BLUETOOTH := true
-BOARD_HAVE_BLUETOOTH_QCOM := true
+BOARD_HAVE_BLUETOOTH_BCM := true
 BLUETOOTH_HCI_USE_MCT := true
 
 TARGET_NO_RADIOIMAGE := true
 TARGET_BOARD_PLATFORM := msm8960
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno320
+TARGET_BOOTLOADER_BOARD_NAME := geefhd
 
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/lge/geefhd-common/bluetooth
 
-BOARD_HOSTAPD_DRIVER := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_WLAN_DEVICE := bcmdhd
+# Wifi related defines
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
-WIFI_DRIVER_MODULE_NAME := bcmdhd
-WPA_SUPPLICANT_VERSION := VER_0_8_X
+WPA_SUPPLICANT_VERSION      := VER_0_8_X
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
+BOARD_HOSTAPD_DRIVER        := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_bcmdhd
+BOARD_WLAN_DEVICE           := bcmdhd
+WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
+WIFI_DRIVER_FW_PATH_STA     := "/etc/firmware/fw_bcmdhd.bin"
+WIFI_DRIVER_FW_PATH_AP      := "/etc/firmware/fw_bcmdhd_apsta.bin"
+WIFI_DRIVER_FW_PATH_P2P     := "/etc/firmware/fw_bcmdhd_p2p.bin"
 
+#Ril
+BOARD_RIL_CLASS := ../../../device/lge/geefhd-common/ril
 
 # Flags 
-#COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
+COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
 
 # QCOM hardware
-#BOARD_USES_QCOM_HARDWARE := true
+BOARD_USES_QCOM_HARDWARE := true
 #BOARD_USES_HGL := true
 #BOARD_USES_OVERLAY := true
+TARGET_QCOM_DISPLAY_VARIANT := caf
+#TARGET_QCOM_AUDIO_VARIANT := caf
 USE_OPENGL_RENDERER := true
 TARGET_USES_ION := true
 TARGET_USES_OVERLAY := true
@@ -121,6 +130,9 @@ BOARD_USES_SECURE_SERVICES := true
 BOARD_USES_EXTRA_THERMAL_SENSOR := true
 BOARD_USES_CAMERA_FAST_AUTOFOCUS := true
 
+# Vibrator
+BOARD_HAS_VIBRATOR_IMPLEMENTATION := ../../device/lge/geefhd-common/vibrator/vibrator.c
+
 # GPS
 BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
 TARGET_NO_RPC := true
@@ -128,6 +140,38 @@ TARGET_NO_RPC := true
 #Preload Boot Animation
 TARGET_BOOTANIMATION_PRELOAD := true
 
-BOARD_HAVE_LOW_LATENCY_AUDIO := true            
-
 BOARD_HAS_NO_SELECT_BUTTON := true
+
+
+BOARD_SEPOLICY_DIRS += \
+        device/lge/geefhd-common/sepolicy
+
+BOARD_SEPOLICY_UNION += \
+	file_contexts \
+	property_contexts \
+	te_macros \
+	bluetooth_loader.te \
+	bridge.te \
+	camera.te \
+	conn_init.te \
+	device.te \
+	dhcp.te \
+	domain.te \
+	drmserver.te \
+	file.te \
+	kickstart.te \
+	init.te \
+	mediaserver.te \
+	mpdecision.te \
+	netmgrd.te \
+	property.te \
+	qmux.te \
+	rild.te \
+	rmt.te \
+	sensors.te \
+	surfaceflinger.te \
+	system.te \
+	tee.te \
+	thermald.te \
+	ueventd.te \
+	wpa_supplicant.te
